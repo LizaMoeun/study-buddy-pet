@@ -14,6 +14,7 @@ function AlpacaCompanion({ state = "welcome" }: { state?: string }) {
         <span className="alpaca__nose" />
       </div>
       <div className="alpaca__neck" />
+      <div className="alpaca__body" />
       <div className="alpaca__scarf" />
     </div>
   );

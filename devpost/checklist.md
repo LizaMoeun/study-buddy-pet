@@ -71,3 +71,5 @@ Reflection: [to be completed after the build]
 Activity mode: [to be completed after the build]
 
 ## Revisions
+
+- The first CSS placeholder was too dog-like in the early hands-on check, so its proportions were revised to use a longer alpaca face, taller ears, longer neck, and visible body while keeping the replaceable CSS-only approach.

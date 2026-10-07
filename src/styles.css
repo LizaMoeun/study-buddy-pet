@@ -33,16 +33,17 @@ h1 span { color: #d47fb2; }
 .alpaca { position: relative; width: 190px; height: 230px; animation: float 3.5s ease-in-out infinite; }
 .alpaca--waiting { transform: scale(.8); opacity: .9; }
 .alpaca--loading { animation: dance .65s ease-in-out infinite alternate; }
-.alpaca__head { position: absolute; z-index: 2; top: 36px; left: 35px; width: 120px; height: 125px; border: 4px solid #c58d68; border-radius: 48% 48% 45% 45%; background: #f5cda8; }
-.alpaca__ear { position: absolute; z-index: 1; top: 14px; width: 38px; height: 64px; border: 4px solid #c58d68; border-radius: 60% 60% 30% 30%; background: #edb98f; }
-.alpaca__ear--left { left: 34px; transform: rotate(-18deg); }
-.alpaca__ear--right { right: 34px; transform: rotate(18deg); }
+.alpaca__head { position: absolute; z-index: 2; top: 30px; left: 47px; width: 96px; height: 145px; border: 4px solid #c58d68; border-radius: 46% 46% 38% 38%; background: #f5cda8; }
+.alpaca__ear { position: absolute; z-index: 1; top: 4px; width: 30px; height: 84px; border: 4px solid #c58d68; border-radius: 65% 65% 35% 35%; background: #edb98f; }
+.alpaca__ear--left { left: 43px; transform: rotate(-16deg); }
+.alpaca__ear--right { right: 43px; transform: rotate(16deg); }
 .alpaca__eye { position: absolute; top: 49px; width: 12px; height: 16px; border-radius: 50%; background: #514663; }
-.alpaca__eye--left { left: 32px; }
-.alpaca__eye--right { right: 32px; }
-.alpaca__nose { position: absolute; left: 48px; top: 80px; width: 24px; height: 17px; border-radius: 50%; background: #a86c70; }
-.alpaca__neck { position: absolute; left: 63px; top: 142px; width: 64px; height: 72px; border-radius: 45%; background: #f0be96; }
-.alpaca__scarf { position: absolute; z-index: 3; left: 48px; top: 145px; width: 94px; height: 24px; border-radius: 12px; background: #a9a7e8; }
+.alpaca__eye--left { left: 23px; }
+.alpaca__eye--right { right: 23px; }
+.alpaca__nose { position: absolute; left: 36px; top: 93px; width: 24px; height: 17px; border-radius: 50%; background: #a86c70; }
+.alpaca__neck { position: absolute; left: 70px; top: 150px; width: 50px; height: 64px; border-radius: 45%; background: #f0be96; }
+.alpaca__body { position: absolute; left: 50px; top: 188px; width: 90px; height: 40px; border-radius: 50% 50% 30% 30%; background: #f0be96; }
+.alpaca__scarf { position: absolute; z-index: 3; left: 51px; top: 150px; width: 88px; height: 24px; border-radius: 12px; background: #a9a7e8; }
 @keyframes float { 50% { transform: translateY(-8px) rotate(1deg); } }
 @keyframes dance { from { transform: rotate(-5deg) translateY(3px); } to { transform: rotate(5deg) translateY(-6px); } }
 
