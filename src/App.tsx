@@ -171,27 +171,34 @@ function GeneratedPreview({ session, onStartReview, onBack }: { session: StudySe
 
 function ReviewView({ session, onBack }: { session: StudySession; onBack: () => void }) {
   const [isReviewing, setIsReviewing] = useState(false);
+  const [reviewPhase, setReviewPhase] = useState<"quiz" | "flashcards">("quiz");
 
   function handleComplete() {
     // TODO: Move to completion view (slice 4)
     setIsReviewing(false);
   }
 
+  function handleQuizComplete() {
+    // In both mode, move to flashcards; otherwise complete
+    if (session.flashcards.length > 0) {
+      setReviewPhase("flashcards");
+    } else {
+      handleComplete();
+    }
+  }
+
   if (!isReviewing) {
     return <GeneratedPreview session={session} onStartReview={() => setIsReviewing(true)} onBack={onBack} />;
   }
 
-  // Render interactive review based on mode
-  if (session.quiz.length > 0 && session.flashcards.length === 0) {
-    return <QuizReview questions={session.quiz} onComplete={handleComplete} />;
-  } else if (session.flashcards.length > 0 && session.quiz.length === 0) {
+  // Render interactive review based on current phase
+  if (reviewPhase === "quiz" && session.quiz.length > 0) {
+    return <QuizReview questions={session.quiz} onComplete={handleQuizComplete} />;
+  } else if (reviewPhase === "flashcards" && session.flashcards.length > 0) {
     return <FlashcardReview flashcards={session.flashcards} onComplete={handleComplete} />;
   } else {
-    // Both mode: show quiz first, then flashcards
-    return <QuizReview questions={session.quiz} onComplete={() => {
-      // After quiz, show flashcards
-      return <FlashcardReview flashcards={session.flashcards} onComplete={handleComplete} />;
-    }} />;
+    // Fallback: show preview
+    return <GeneratedPreview session={session} onStartReview={() => setIsReviewing(true)} onBack={onBack} />;
   }
 }
 
