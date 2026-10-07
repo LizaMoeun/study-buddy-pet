@@ -56,6 +56,7 @@ h1 span { color: #d47fb2; }
 .setup-intro h1 { max-width: 440px; font-size: clamp(2.3rem, 4vw, 4rem); }
 .setup-intro > .alpaca { margin: 12px 0 0 60px; }
 .setup-card { padding: clamp(24px, 4vw, 42px); border: 1px solid #ebdef4; border-radius: 28px; background: rgba(255,255,255,.86); box-shadow: 0 18px 45px rgba(168, 148, 194, .13); }
+.form-error { margin: 14px 0 0; color: #b65f7e; font-size: .88rem; font-weight: 700; }
 .field-label { display: block; margin-bottom: 10px; color: #665774; font-size: .85rem; font-weight: 800; }
 textarea, select { border: 1px solid #e8dced; border-radius: 16px; outline: none; background: #fff; color: #5b5169; }
 textarea { display: block; width: 100%; resize: vertical; padding: 16px; line-height: 1.6; }
@@ -66,9 +67,17 @@ fieldset { min-width: 0; padding: 0; border: 0; }
 .mode-option { border: 1px solid #eadcf1; border-radius: 12px; padding: 10px 13px; color: #836e91; background: #fff; font-weight: 700; }
 .mode-option--selected { border-color: #bb9fd5; color: #75518c; background: #f6ebfb; }
 .count-control select { min-width: 70px; padding: 10px; }
+.generated-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(28px, 7vw, 90px); align-items: start; max-width: 1180px; margin: 9vh auto 0; }
+.generated-layout h1 { max-width: 460px; font-size: clamp(2.3rem, 4vw, 4rem); }
+.results-card { display: grid; gap: 24px; padding: clamp(24px, 4vw, 42px); border: 1px solid #ebdef4; border-radius: 28px; background: rgba(255,255,255,.86); box-shadow: 0 18px 45px rgba(168, 148, 194, .13); }
+.results-card h2 { margin: 0 0 12px; color: #75518c; font-size: 1.15rem; }
+.result-item { padding: 14px 16px; border-radius: 16px; background: #fbf5ff; }
+.result-item + .result-item { margin-top: 10px; }
+.result-item strong { color: #5e506d; }
+.result-item p { margin: 8px 0 0; color: #8b7d94; line-height: 1.5; }
 
 @media (max-width: 760px) {
-  .hero-card, .setup-layout { grid-template-columns: 1fr; }
+  .hero-card, .setup-layout, .generated-layout { grid-template-columns: 1fr; }
   .hero-companion { order: -1; }
   .setup-layout { margin-top: 50px; }
   .setup-intro > .alpaca { margin-left: 0; }

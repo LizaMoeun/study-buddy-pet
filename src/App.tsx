@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { StudyMode } from "./shared/types";
+import { useState, type FormEvent } from "react";
+import type { GenerateRequest, StudyMode, StudySession } from "./shared/types";
 
 type View = "landing" | "setup";
 
@@ -50,10 +50,35 @@ function Landing({ onContinue }: { onContinue: () => void }) {
   );
 }
 
-function Setup({ onBack }: { onBack: () => void }) {
+function Setup({ onBack, onGenerated }: { onBack: () => void; onGenerated: (session: StudySession) => void }) {
   const [note, setNote] = useState("");
   const [mode, setMode] = useState<StudyMode>("quiz");
   const [count, setCount] = useState(3);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function generate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+    const payload: GenerateRequest = { note, mode, count };
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json() as StudySession | { message: string };
+      if (!response.ok || !("quiz" in result)) {
+        throw new Error("message" in result ? result.message : "Please try again.");
+      }
+      onGenerated(result);
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : "Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="page page--setup">
@@ -69,7 +94,7 @@ function Setup({ onBack }: { onBack: () => void }) {
           <p>Paste a note, pick your cozy study mode, and let your buddy make it easier to review.</p>
           <AlpacaCompanion state="waiting" />
         </div>
-        <form className="setup-card" onSubmit={(event) => event.preventDefault()}>
+        <form className="setup-card" onSubmit={generate}>
           <label className="field-label" htmlFor="notes">Paste your notes</label>
           <textarea
             id="notes"
@@ -101,11 +126,55 @@ function Setup({ onBack }: { onBack: () => void }) {
               </select>
             </label>
           </div>
-          <button className="button button--primary button--wide" type="submit" disabled={!note.trim()}>
-            Make my study set ✨
+          <button className="button button--primary button--wide" type="submit" disabled={!note.trim() || loading}>
+            {loading ? "Alpaca is creating..." : "Make my study set ✨"}
           </button>
           {!note.trim() && <p className="form-hint">Add a few notes first, and we’ll take it from there.</p>}
+          {error && <p className="form-error">{error}</p>}
         </form>
+      </section>
+    </main>
+  );
+}
+
+function GeneratedPreview({ session, onBack }: { session: StudySession; onBack: () => void }) {
+  return (
+    <main className="page page--setup">
+      <header className="topbar">
+        <button className="back-button" onClick={onBack}>← New study set</button>
+        <div className="brand-mark">✦ Alpaca Study Buddy</div>
+        <span className="guest-pill">{session.count} items ready</span>
+      </header>
+      <section className="generated-layout">
+        <div>
+          <p className="eyebrow">Your study set is ready</p>
+          <h1>Let’s take it one gentle step at a time.</h1>
+          <AlpacaCompanion state="waiting" />
+        </div>
+        <div className="results-card">
+          {session.quiz.length > 0 && (
+            <section>
+              <h2>Quiz preview</h2>
+              {session.quiz.map((question, index) => (
+                <article className="result-item" key={question.question}>
+                  <strong>{index + 1}. {question.question}</strong>
+                  <p>{question.choices.join(" · ")}</p>
+                </article>
+              ))}
+            </section>
+          )}
+          {session.flashcards.length > 0 && (
+            <section>
+              <h2>Flashcard preview</h2>
+              {session.flashcards.map((card, index) => (
+                <article className="result-item" key={card.front}>
+                  <strong>{index + 1}. {card.front}</strong>
+                  <p>{card.back}</p>
+                </article>
+              ))}
+            </section>
+          )}
+        </div>
       </section>
     </main>
   );
@@ -113,7 +182,10 @@ function Setup({ onBack }: { onBack: () => void }) {
 
 export default function App() {
   const [view, setView] = useState<View>("landing");
+  const [session, setSession] = useState<StudySession | null>(null);
   return view === "landing"
     ? <Landing onContinue={() => setView("setup")} />
-    : <Setup onBack={() => setView("landing")} />;
+    : session
+      ? <GeneratedPreview session={session} onBack={() => setSession(null)} />
+      : <Setup onBack={() => setView("landing")} onGenerated={setSession} />;
 }

@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Open the local app, choose guest use, paste a short note, select a mode and quantity, and say whether the first screen feels like the friendly study companion you pictured.
   Commit: `Create Alpaca Study Buddy setup flow`
 
-- [ ] **2. Notes become validated AI study material**
+- [x] **2. Notes become validated AI study material**
   Becomes usable: The selected note, mode, and quantity travel through the local server to OpenAI, and the app renders validated quiz and/or flashcard data instead of generic chatbot text.
   Why now: This is the core technical risk and the unique product kernel; proving structured generation early prevents building polished review UI around an unreliable response shape.
   PRD ref: `prd.md > Note and mode setup`, `prd.md > AI generation`, `prd.md > Friendly guidance for unusable input or failures`
