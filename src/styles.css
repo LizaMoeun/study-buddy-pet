@@ -82,3 +82,48 @@ fieldset { min-width: 0; padding: 0; border: 0; }
   .setup-layout { margin-top: 50px; }
   .setup-intro > .alpaca { margin-left: 0; }
 }
+
+/* Interactive Review Styles */
+.review-view { display: flex; flex-direction: column; height: 100vh; }
+.review-topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; border-bottom: 1px solid #eadcf1; background: rgba(255, 255, 255, 0.95); }
+.review-topbar > div { font-weight: 700; color: #75518c; }
+.alpaca-inline { width: 200px; text-align: center; }
+.alpaca-inline .alpaca { width: 120px; height: 150px; margin: 0 auto; }
+.alpaca-message { text-align: center; margin-top: 8px; font-size: 0.9rem; color: #9b90a4; }
+
+/* Quiz Review */
+.quiz-card { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 28px; max-width: 800px; margin: 0 auto; width: 100%; }
+.quiz-card h3 { margin: 0 0 32px; font-size: 1.5rem; color: #514663; line-height: 1.4; }
+.choices { display: grid; gap: 12px; margin-bottom: 24px; }
+.choice-button { border: 2px solid #d9cce3; border-radius: 16px; padding: 18px 20px; background: #fff; color: #5b5169; text-align: left; font-weight: 600; transition: all 0.2s; cursor: pointer; }
+.choice-button:hover:not(:disabled) { border-color: #bb9fd5; background: #f9f3fb; }
+.choice-button--selected { border-color: #a9a7e8; background: #f0ebf8; }
+.choice-button--correct { border-color: #7bc47b; background: #e8f5e8; color: #2e6e2e; }
+.choice-button--incorrect { border-color: #d97979; background: #ffe8e8; color: #8b3a3a; }
+.choice-button:disabled { cursor: default; }
+.feedback { margin-top: 24px; padding: 16px 20px; border-radius: 16px; }
+.feedback--positive { background: #e8f5e8; color: #2e6e2e; }
+.feedback--supportive { background: #fef5e8; color: #8b6a2e; }
+.feedback p { margin: 0; line-height: 1.5; }
+.feedback p + p { margin-top: 8px; }
+.explanation { font-size: 0.95rem; }
+
+/* Flashcard Review */
+.flashcard-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 28px; }
+.flashcard { width: min(600px, 90vw); aspect-ratio: 3 / 2; position: relative; cursor: pointer; perspective: 1000px; }
+.flashcard-side { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 40px; border-radius: 24px; font-weight: 600; text-align: center; line-height: 1.5; font-size: 1.2rem; transition: opacity 0.3s, visibility 0.3s; }
+.flashcard-side--front { background: linear-gradient(135deg, #f5e8ff, #e8f3ff); color: #514663; opacity: 1; visibility: visible; }
+.flashcard-side--back { background: linear-gradient(135deg, #ffeaf5, #e8f3ff); color: #75518c; opacity: 0; visibility: hidden; }
+.flashcard--flipped .flashcard-side--front { opacity: 0; visibility: hidden; }
+.flashcard--flipped .flashcard-side--back { opacity: 1; visibility: visible; }
+.card-hint { margin-top: 20px; color: #9b90a4; font-size: 0.85rem; }
+
+/* Review Navigation */
+.review-nav { display: flex; justify-content: space-between; gap: 16px; padding: 20px 28px; border-top: 1px solid #eadcf1; background: rgba(255, 255, 255, 0.95); }
+.review-nav button { flex: 1; }
+
+@media (max-width: 760px) {
+  .review-topbar { flex-direction: column; gap: 12px; text-align: center; }
+  .alpaca-inline { width: auto; }
+  .review-nav { flex-direction: column; }
+}

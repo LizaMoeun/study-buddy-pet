@@ -1,24 +1,10 @@
 import { useState, type FormEvent } from "react";
 import type { GenerateRequest, StudyMode, StudySession } from "./shared/types";
+import AlpacaCompanion from "./components/AlpacaCompanion";
+import QuizReview from "./components/QuizReview";
+import FlashcardReview from "./components/FlashcardReview";
 
-type View = "landing" | "setup";
-
-function AlpacaCompanion({ state = "welcome" }: { state?: string }) {
-  return (
-    <div className={`alpaca alpaca--${state}`} aria-label={`Alpaca ${state}`}>
-      <div className="alpaca__ear alpaca__ear--left" />
-      <div className="alpaca__ear alpaca__ear--right" />
-      <div className="alpaca__head">
-        <span className="alpaca__eye alpaca__eye--left" />
-        <span className="alpaca__eye alpaca__eye--right" />
-        <span className="alpaca__nose" />
-      </div>
-      <div className="alpaca__neck" />
-      <div className="alpaca__body" />
-      <div className="alpaca__scarf" />
-    </div>
-  );
-}
+type View = "landing" | "setup" | "review";
 
 function Landing({ onContinue }: { onContinue: () => void }) {
   return (
@@ -137,7 +123,7 @@ function Setup({ onBack, onGenerated }: { onBack: () => void; onGenerated: (sess
   );
 }
 
-function GeneratedPreview({ session, onBack }: { session: StudySession; onBack: () => void }) {
+function GeneratedPreview({ session, onStartReview, onBack }: { session: StudySession; onStartReview: () => void; onBack: () => void }) {
   return (
     <main className="page page--setup">
       <header className="topbar">
@@ -150,6 +136,9 @@ function GeneratedPreview({ session, onBack }: { session: StudySession; onBack: 
           <p className="eyebrow">Your study set is ready</p>
           <h1>Let’s take it one gentle step at a time.</h1>
           <AlpacaCompanion state="waiting" />
+          <button className="button button--primary" onClick={onStartReview}>
+            Start study →
+          </button>
         </div>
         <div className="results-card">
           {session.quiz.length > 0 && (
@@ -180,12 +169,38 @@ function GeneratedPreview({ session, onBack }: { session: StudySession; onBack: 
   );
 }
 
+function ReviewView({ session, onBack }: { session: StudySession; onBack: () => void }) {
+  const [isReviewing, setIsReviewing] = useState(false);
+
+  function handleComplete() {
+    // TODO: Move to completion view (slice 4)
+    setIsReviewing(false);
+  }
+
+  if (!isReviewing) {
+    return <GeneratedPreview session={session} onStartReview={() => setIsReviewing(true)} onBack={onBack} />;
+  }
+
+  // Render interactive review based on mode
+  if (session.quiz.length > 0 && session.flashcards.length === 0) {
+    return <QuizReview questions={session.quiz} onComplete={handleComplete} />;
+  } else if (session.flashcards.length > 0 && session.quiz.length === 0) {
+    return <FlashcardReview flashcards={session.flashcards} onComplete={handleComplete} />;
+  } else {
+    // Both mode: show quiz first, then flashcards
+    return <QuizReview questions={session.quiz} onComplete={() => {
+      // After quiz, show flashcards
+      return <FlashcardReview flashcards={session.flashcards} onComplete={handleComplete} />;
+    }} />;
+  }
+}
+
 export default function App() {
   const [view, setView] = useState<View>("landing");
   const [session, setSession] = useState<StudySession | null>(null);
   return view === "landing"
     ? <Landing onContinue={() => setView("setup")} />
     : session
-      ? <GeneratedPreview session={session} onBack={() => setSession(null)} />
-      : <Setup onBack={() => setView("landing")} onGenerated={setSession} />;
+      ? <ReviewView session={session} onBack={() => { setSession(null); setView("setup"); }} />
+      : <Setup onBack={() => setView("landing")} onGenerated={(session) => { setSession(session); setView("review"); }} />;
 }
