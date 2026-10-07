@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+
+# Local learning profile; keep personal context out of commits by default
+/devpost/learner-profile.md
+
+node_modules/
+dist/
+dist-server/
