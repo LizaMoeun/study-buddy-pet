@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Start the app with your local key, paste a real note, try each mode, and check that the generated questions/cards use the note and respect your selected quantity.
   Commit: `Generate validated AI study material`
 
-- [ ] **3. Quiz, flashcards, and alpaca reactions are interactive**
+- [x] **3. Quiz, flashcards, and alpaca reactions are interactive**
   Becomes usable: The learner can answer multiple-choice questions, reveal and navigate flashcards with touch or keyboard, and see the alpaca react to loading, waiting, correct, and incorrect states.
   Why now: Once real material exists, this slice turns it into the supportive experience that distinguishes the project from a generic generator.
   PRD ref: `prd.md > Flashcard review`, `prd.md > Quiz review and encouragement`, `prd.md > Look and Feel`

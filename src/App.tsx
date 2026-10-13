@@ -171,7 +171,9 @@ function GeneratedPreview({ session, onStartReview, onBack }: { session: StudySe
 
 function ReviewView({ session, onBack }: { session: StudySession; onBack: () => void }) {
   const [isReviewing, setIsReviewing] = useState(false);
-  const [reviewPhase, setReviewPhase] = useState<"quiz" | "flashcards">("quiz");
+  const [reviewPhase, setReviewPhase] = useState<"quiz" | "flashcards">(
+    session.quiz.length > 0 ? "quiz" : "flashcards"
+  );
 
   function handleComplete() {
     // TODO: Move to completion view (slice 4)
@@ -188,7 +190,16 @@ function ReviewView({ session, onBack }: { session: StudySession; onBack: () => 
   }
 
   if (!isReviewing) {
-    return <GeneratedPreview session={session} onStartReview={() => setIsReviewing(true)} onBack={onBack} />;
+    return (
+      <GeneratedPreview
+        session={session}
+        onStartReview={() => {
+          setReviewPhase(session.quiz.length > 0 ? "quiz" : "flashcards");
+          setIsReviewing(true);
+        }}
+        onBack={onBack}
+      />
+    );
   }
 
   // Render interactive review based on current phase
