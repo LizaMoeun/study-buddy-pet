@@ -10,7 +10,11 @@ app.get("/api/health", (_request, response) => response.json({ ok: true }));
 function isQuotaError(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
   const details = error as { code?: unknown; status?: unknown };
-  return details.code === "insufficient_quota" || details.status === 429;
+  return details.code === "rate_limit_exceeded" || details.code === "insufficient_quota" || details.status === 429;
+}
+
+function isMissingKeyError(error: unknown): boolean {
+  return error instanceof Error && error.message === "GROQ_API_KEY is not configured.";
 }
 
 app.post("/api/generate", async (request, response) => {
@@ -25,9 +29,15 @@ app.post("/api/generate", async (request, response) => {
     response.json(session);
   } catch (error) {
     console.error("Study generation failed:", error);
+    if (isMissingKeyError(error)) {
+      response.status(502).json({
+        message: "Groq is not configured yet. Add GROQ_API_KEY to your local .env file, then restart the server."
+      });
+      return;
+    }
     if (isQuotaError(error)) {
       response.status(502).json({
-        message: "This OpenAI account has no API credits remaining. Add credits, then try again."
+        message: "Groq rate limit reached. Wait a moment and try again, or check your Groq account limits."
       });
       return;
     }

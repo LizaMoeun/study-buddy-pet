@@ -45,32 +45,34 @@ function outputCounts(mode: GenerateRequest["mode"], count: number) {
 }
 
 export async function generateStudySession(request: GenerateRequest) {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY is not configured.");
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not configured.");
   }
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({
+    apiKey: process.env.GROQ_API_KEY,
+    baseURL: "https://api.groq.com/openai/v1"
+  });
 
   const counts = outputCounts(request.mode, request.count);
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+    model: process.env.GROQ_MODEL ?? "openai/gpt-oss-20b",
     messages: [
       {
         role: "system",
-        content: `Create grounded study material from the user's notes. Return exactly ${counts.quiz} quiz questions and ${counts.flashcards} flashcards. Quiz questions must have four choices and one correctIndex. Do not add facts that are not supported by the notes.`
+        content: `Create grounded study material from the user's notes. Return only valid JSON with this exact shape:
+${JSON.stringify(outputSchema)}
+Return exactly ${counts.quiz} quiz questions and ${counts.flashcards} flashcards. Quiz questions must have four choices and one correctIndex. Use empty arrays for types not requested. Do not add facts that are not supported by the notes.`
       },
       {
         role: "user",
         content: JSON.stringify({ note: request.note, mode: request.mode, count: request.count })
       }
     ],
-    response_format: {
-      type: "json_schema",
-      json_schema: { name: "study_session", strict: true, schema: outputSchema }
-    }
+    response_format: { type: "json_object" }
   });
 
   const content = completion.choices[0]?.message.content;
-  if (!content) throw new Error("OpenAI returned no study material.");
+  if (!content) throw new Error("Groq returned no study material.");
   const result = studySessionSchema.parse(JSON.parse(content));
   if (result.mode !== request.mode || result.count !== request.count) {
     throw new Error("The generated study material did not match the selected mode.");

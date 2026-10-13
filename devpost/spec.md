@@ -10,11 +10,11 @@ status: approved
 The app has two parts:
 
 1. A React website runs in the browser. It shows the landing page, note form, mode and quantity choices, quiz, flashcards, alpaca states, and completion actions.
-2. A small TypeScript server receives the note, selected modes, and requested item count. It sends a carefully shaped request to OpenAI, checks that the response contains valid quiz and flashcard fields, and sends the checked result back to the browser.
+2. A small TypeScript server receives the note, selected modes, and requested item count. It sends a carefully shaped request to Groq through its OpenAI-compatible API, checks that the response contains valid quiz and flashcard fields, and sends the checked result back to the browser.
 
-The browser never receives the OpenAI key. The current note and generated study session stay in browser memory only, so the user can review or retake the current session, but refreshing or closing the page clears it. There is no database or real account system in this proof of concept.
+The browser never receives the Groq key. The current note and generated study session stay in browser memory only, so the user can review or retake the current session, but refreshing or closing the page clears it. There is no database or real account system in this proof of concept.
 
-Using structured AI output and validation keeps the app from treating OpenAI like a generic chatbot. The server only returns data that matches the selected mode and the expected question, choice, answer, and flashcard shape. If that check fails, the browser shows a friendly retry message instead of broken study cards.
+Using Groq JSON mode and validation keeps the app from treating an AI provider like a generic chatbot. The server only returns data that matches the selected mode and the expected question, choice, answer, and flashcard shape. If that check fails, the browser shows a friendly retry message instead of broken study cards.
 
 ## The Core Journey Through the System
 
@@ -24,7 +24,7 @@ PRD ref: `prd.md > The Core Journey`.
 2. The user chooses guest or the visible account option. Both enter the local study flow; account storage is not implemented.
 3. The setup view stores the pasted note, selected mode, and quantity (3–7) in React state. In both mode, the quantity is the total item budget shared across quiz questions and flashcards.
 4. On generate, the client sends those values to `POST /api/generate`. The alpaca changes to dancing/loading.
-5. The server validates the request, builds the mode-specific OpenAI prompt, requests structured JSON, validates the response with Zod, and returns the checked study session.
+5. The server validates the request, builds the mode-specific Groq prompt, requests JSON mode output, validates the response with Zod, and returns the checked study session.
 6. The client stores the session in memory and renders the selected quiz and/or flashcards.
 7. Quiz answers update local progress and choose the alpaca's correct or supportive incorrect state. Flashcard gestures and keyboard arrows update the current card and reveal state.
 8. When review is complete, the client renders completion actions: review, retake the same in-memory session, or create a new session.
@@ -35,18 +35,18 @@ PRD ref: `prd.md > The Core Journey`.
 - **React** for stateful screens and interactions. Docs: https://react.dev/
 - **Vite** for the local development server and browser bundling. Docs: https://vite.dev/guide/
 - **Express** for the small server endpoint. Docs: https://expressjs.com/
-- **OpenAI Node SDK** for model requests and structured output. Docs: https://github.com/openai/openai-node
+- **OpenAI Node SDK** pointed at Groq's compatible API for model requests and JSON output. Docs: https://github.com/openai/openai-node
 - **Zod** for request and response validation. Docs: https://zod.dev/
 - **CSS animations** for the replaceable alpaca placeholder; no animation asset or animation framework is required for the POC.
 
-The learner accepted this small React/Vite plus server approach because it keeps the AI key private without adding accounts or a database. The OpenAI tradeoff is using a provider that supports the structured response path recommended for reliable quiz and flashcard rendering; Groq can remain a later provider option.
+The learner accepted this small React/Vite plus server approach because it keeps the AI key private without adding accounts or a database. Groq's free API is used through the existing OpenAI-compatible SDK, with JSON mode plus Zod validation for reliable quiz and flashcard rendering.
 
 ## Where It Runs and How Someone Tries It
 
-The app runs locally in a browser. Node.js 20 or newer and an OpenAI API key are required.
+The app runs locally in a browser. Node.js 20 or newer and a Groq API key are required.
 
 1. Copy `.env.example` to `.env`.
-2. Put the key in `OPENAI_API_KEY`. Never commit `.env`.
+2. Put the key in `GROQ_API_KEY`. Never commit `.env`.
 3. Install dependencies with `npm install`.
 4. Start the client and API together with `npm run dev`.
 5. Open `http://localhost:5173`.
@@ -87,7 +87,7 @@ PRD ref: `prd.md > AI generation`.
 
 ### Generation API
 
-Validates the request, calls OpenAI with a mode-aware prompt, validates the structured response, and returns only the selected output types.
+Validates the request, calls Groq with a mode-aware prompt and JSON mode, validates the response with Zod, and returns only the selected output types.
 PRD ref: `prd.md > AI generation` and `prd.md > Friendly guidance for unusable input or failures`.
 
 ### Quiz review
@@ -178,14 +178,16 @@ study-buddy-pet/
 
 ## External Services and Dependencies
 
-### OpenAI API
+### Groq API
 
-- **Call:** Structured-output request from `server/openai.ts`.
+- **Call:** JSON-mode request from `server/openai.ts` using the OpenAI-compatible SDK.
 - **Input:** System instructions plus the note, selected mode, and count.
 - **Output:** JSON matching `StudySession`, validated by Zod before returning to the browser.
-- **Key:** `OPENAI_API_KEY` on the server only.
-- **Docs:** https://platform.openai.com/docs/guides/structured-outputs and https://github.com/openai/openai-node
-- **Cost/rate limits:** Depend on the selected OpenAI account and model; check the account before the demo. Provider failures are surfaced rather than replaced with fake content.
+- **Key:** `GROQ_API_KEY` on the server only.
+- **Base URL:** `https://api.groq.com/openai/v1`
+- **Model:** `openai/gpt-oss-20b`
+- **Docs:** https://console.groq.com/docs/models, https://console.groq.com/docs/json_mode, and https://github.com/openai/openai-node
+- **Cost/rate limits:** Depend on Groq's free API limits; rate-limit failures are surfaced rather than replaced with fake content.
 
 No database, authentication provider, hosted storage, or deployment service is used in the POC.
 
@@ -194,7 +196,7 @@ No database, authentication provider, hosted storage, or deployment service is u
 - **Empty note** -> Keep the user on setup and show a short alpaca-friendly hint.
 - **Short or unclear note** -> Ask for more context instead of generating low-quality content.
 - **Invalid mode/count/request** -> Return a clear client error and keep setup values available for correction.
-- **OpenAI failure or invalid structured output** -> Show a friendly retry action; never render unchecked material.
+- **Groq failure or invalid JSON/Zod output** -> Show a friendly retry action; never render unchecked material.
 - **Keyboard or swipe at a boundary** -> Keep the current card and avoid moving outside the generated range.
 
 ## What Was Simplified and Why
@@ -209,7 +211,7 @@ No database, authentication provider, hosted storage, or deployment service is u
 ### Decisions
 
 - React + Vite frontend and TypeScript server endpoint.
-- OpenAI for structured quiz/flashcard generation.
+- Groq JSON mode for quiz/flashcard generation through the OpenAI-compatible SDK.
 - Local browser demo.
 - TypeScript shared data types plus Zod runtime validation.
 - CSS alpaca placeholder and motion states.
@@ -223,6 +225,6 @@ The learner wanted the app to understand intent instead of acting like a generic
 
 ### Open issues
 
-- The exact OpenAI model can be chosen during setup after checking the account's available models and structured-output support.
+- The default Groq model is `openai/gpt-oss-20b`; it can be overridden with `GROQ_MODEL` after checking Groq's active model list and JSON-mode support.
 - Final alpaca illustration and animation assets can replace the CSS placeholder later.
 - Exact alpaca wording can be tuned during implementation without changing the product behavior.
