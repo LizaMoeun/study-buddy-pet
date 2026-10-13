@@ -1,12 +1,13 @@
-import { useState, type FormEvent } from "react";
-import type { GenerateRequest, StudyMode, StudySession } from "./shared/types";
+import { useEffect, useState, type FormEvent } from "react";
+import type { AuthUser, GenerateRequest, StudyMode, StudySession } from "./shared/types";
 import AlpacaCompanion from "./components/AlpacaCompanion";
+import AuthForm from "./components/AuthForm";
 import QuizReview from "./components/QuizReview";
 import FlashcardReview from "./components/FlashcardReview";
 
-type View = "landing" | "setup" | "review";
+type View = "landing" | "setup" | "review" | "auth";
 
-function Landing({ onContinue }: { onContinue: () => void }) {
+function Landing({ onContinue, onAuth }: { onContinue: () => void; onAuth: () => void }) {
   return (
     <main className="page page--landing">
       <section className="hero-card">
@@ -21,7 +22,7 @@ function Landing({ onContinue }: { onContinue: () => void }) {
             <button className="button button--primary" onClick={onContinue}>
               Continue as guest
             </button>
-            <button className="button button--quiet" onClick={onContinue}>
+            <button className="button button--quiet" onClick={onAuth}>
               Log in or sign up
             </button>
           </div>
@@ -35,7 +36,7 @@ function Landing({ onContinue }: { onContinue: () => void }) {
   );
 }
 
-function Setup({ onBack, onGenerated }: { onBack: () => void; onGenerated: (session: StudySession) => void }) {
+function Setup({ user, onBack, onLogout, onGenerated }: { user: AuthUser | null; onBack: () => void; onLogout: () => void; onGenerated: (session: StudySession) => void }) {
   const [note, setNote] = useState("");
   const [mode, setMode] = useState<StudyMode>("quiz");
   const [count, setCount] = useState(3);
@@ -70,7 +71,9 @@ function Setup({ onBack, onGenerated }: { onBack: () => void; onGenerated: (sess
       <header className="topbar">
         <button className="back-button" onClick={onBack}>← Back</button>
         <div className="brand-mark">✦ Alpaca Study Buddy</div>
-        <span className="guest-pill">Guest mode</span>
+        {user
+          ? <button className="guest-pill guest-pill--button" onClick={onLogout}>{user.email} · Sign out</button>
+          : <span className="guest-pill">Guest mode</span>}
       </header>
       <section className="setup-layout">
         <div className="setup-intro">
@@ -215,9 +218,29 @@ function ReviewView({ session, onBack }: { session: StudySession; onBack: () => 
 export default function App() {
   const [view, setView] = useState<View>("landing");
   const [session, setSession] = useState<StudySession | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then(async (response) => {
+        if (!response.ok) return;
+        const result = await response.json() as { user: AuthUser | null };
+        if (result.user) setUser(result.user);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    setView("landing");
+  }
+
   return view === "landing"
-    ? <Landing onContinue={() => setView("setup")} />
+    ? <Landing onContinue={() => setView("setup")} onAuth={() => setView("auth")} />
+    : view === "auth"
+      ? <AuthForm onBack={() => setView("landing")} onAuthenticated={(authenticatedUser) => { setUser(authenticatedUser); setView("setup"); }} />
     : session
       ? <ReviewView session={session} onBack={() => { setSession(null); setView("setup"); }} />
-      : <Setup onBack={() => setView("landing")} onGenerated={(session) => { setSession(session); setView("review"); }} />;
+      : <Setup user={user} onBack={() => setView("landing")} onLogout={logout} onGenerated={(session) => { setSession(session); setView("review"); }} />;
 }

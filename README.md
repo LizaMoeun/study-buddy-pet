@@ -16,6 +16,7 @@ Turn notes into friendly quizzes and flashcards with a supportive alpaca compani
    ```env
    GROQ_API_KEY=your_key_here
    GROQ_MODEL=openai/gpt-oss-20b
+   DATABASE_URL=postgresql://username:password@localhost:5432/alpaca_study_buddy
    ```
 
    Keep `.env` private. It is ignored by Git.
@@ -27,6 +28,8 @@ Turn notes into friendly quizzes and flashcards with a supportive alpaca compani
    ```
 
 Open http://localhost:5173. The server uses the OpenAI-compatible SDK pointed at Groq's free API endpoint. Responses use Groq JSON mode and are validated with Zod before they reach the browser.
+
+Authentication uses PostgreSQL, bcrypt password hashing, and HTTP-only server sessions. Set `DATABASE_URL` to a PostgreSQL database before using **Log in or sign up**. The server creates the `users` and `sessions` tables on startup. Guest study sessions remain available without a database.
 
 ## Useful commands
 

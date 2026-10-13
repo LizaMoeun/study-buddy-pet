@@ -12,7 +12,7 @@ The app has two parts:
 1. A React website runs in the browser. It shows the landing page, note form, mode and quantity choices, quiz, flashcards, alpaca states, and completion actions.
 2. A small TypeScript server receives the note, selected modes, and requested item count. It sends a carefully shaped request to Groq through its OpenAI-compatible API, checks that the response contains valid quiz and flashcard fields, and sends the checked result back to the browser.
 
-The browser never receives the Groq key. The current note and generated study session stay in browser memory only, so the user can review or retake the current session, but refreshing or closing the page clears it. There is no database or real account system in this proof of concept.
+The browser never receives the Groq key or database credentials. Account records and server-side sessions are stored in PostgreSQL, while the current note and generated study session stay in browser memory only. There is no saved study history in this proof of concept.
 
 Using Groq JSON mode and validation keeps the app from treating an AI provider like a generic chatbot. The server only returns data that matches the selected mode and the expected question, choice, answer, and flashcard shape. If that check fails, the browser shows a friendly retry message instead of broken study cards.
 
@@ -21,7 +21,7 @@ Using Groq JSON mode and validation keeps the app from treating an AI provider l
 PRD ref: `prd.md > The Core Journey`.
 
 1. The browser loads the landing view and renders the CSS alpaca in its welcome state.
-2. The user chooses guest or the visible account option. Both enter the local study flow; account storage is not implemented.
+2. The user chooses guest or the visible account option. Account users sign up or sign in through the server; guest users enter without authentication.
 3. The setup view stores the pasted note, selected mode, and quantity (3–7) in React state. In both mode, the quantity is the total item budget shared across quiz questions and flashcards.
 4. On generate, the client sends those values to `POST /api/generate`. The alpaca changes to dancing/loading.
 5. The server validates the request, builds the mode-specific Groq prompt, requests JSON mode output, validates the response with Zod, and returns the checked study session.
@@ -37,9 +37,11 @@ PRD ref: `prd.md > The Core Journey`.
 - **Express** for the small server endpoint. Docs: https://expressjs.com/
 - **OpenAI Node SDK** pointed at Groq's compatible API for model requests and JSON output. Docs: https://github.com/openai/openai-node
 - **Zod** for request and response validation. Docs: https://zod.dev/
+- **PostgreSQL** for users and sessions, accessed with `pg`.
+- **bcryptjs** for password hashing; passwords are never stored directly.
 - **CSS animations** for the replaceable alpaca placeholder; no animation asset or animation framework is required for the POC.
 
-The learner accepted this small React/Vite plus server approach because it keeps the AI key private without adding accounts or a database. Groq's free API is used through the existing OpenAI-compatible SDK, with JSON mode plus Zod validation for reliable quiz and flashcard rendering.
+The learner accepted this React/Vite plus server approach because it keeps provider credentials private and now supports real email/password accounts. Groq's free API is used through the existing OpenAI-compatible SDK, with JSON mode plus Zod validation for reliable quiz and flashcard rendering.
 
 ## Where It Runs and How Someone Tries It
 
@@ -72,7 +74,7 @@ PRD ref: `prd.md > The Core Journey`.
 
 ### Landing and access choice
 
-Explains the product and offers guest continuation plus a visible login/sign-up option. The account option is intentionally presentational in the POC.
+Explains the product and offers guest continuation plus email/password login and sign-up.
 PRD ref: `prd.md > Arrival and access choice`.
 
 ### Study setup
@@ -189,7 +191,7 @@ study-buddy-pet/
 - **Docs:** https://console.groq.com/docs/models, https://console.groq.com/docs/json_mode, and https://github.com/openai/openai-node
 - **Cost/rate limits:** Depend on Groq's free API limits; rate-limit failures are surfaced rather than replaced with fake content.
 
-No database, authentication provider, hosted storage, or deployment service is used in the POC.
+PostgreSQL stores account records and server-side sessions. No saved study history, email verification, password reset, or social login is included in the POC.
 
 ## Important Failure Modes
 
@@ -202,7 +204,7 @@ No database, authentication provider, hosted storage, or deployment service is u
 ## What Was Simplified and Why
 
 - **CSS placeholder alpaca** instead of a final animated asset - the learner does not have an asset yet, and CSS states prove the emotional interaction while keeping replacement easy.
-- **Browser memory** instead of accounts, persistence, and a database - the POC needs review, retake, and new-session behavior, not saved history.
+- **Browser memory** for active study content instead of saved study history - the POC needs review, retake, and new-session behavior without adding a history product.
 - **One generation endpoint** instead of a general chatbot - a typed mode/count request directly proves accurate intent handling.
 - **Local development** instead of deployment - the demo video and public repository are required, while hosting is optional.
 
@@ -215,7 +217,7 @@ No database, authentication provider, hosted storage, or deployment service is u
 - Local browser demo.
 - TypeScript shared data types plus Zod runtime validation.
 - CSS alpaca placeholder and motion states.
-- Guest/account choice is visible, but authentication and persistence are deferred.
+- Email/password authentication uses PostgreSQL-backed users and HTTP-only sessions; study history is deferred.
 - Active session is browser-memory only.
 - In both mode, the selected 3–7 count is a total shared across quiz questions and flashcards.
 

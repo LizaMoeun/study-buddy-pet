@@ -12,7 +12,7 @@ One line: A cute, supportive web study companion that turns pasted notes into qu
 Source: `scope.md > The Core Loop` and `scope.md > What "Working" Looks Like`.
 
 1. The user opens a welcoming landing page that explains Alpaca Study Buddy.
-2. The user chooses to continue as a guest or select login/sign-up. The proof of concept shows this choice, but does not implement real account storage or history.
+2. The user chooses to continue as a guest or select login/sign-up. Account users authenticate with email and password; guest users can still enter without an account.
 3. The user reaches the study screen, pastes notes, and selects quiz, flashcards, or both.
 4. The user starts processing. The alpaca shows a dancing/loading motion while the AI creates material based on the note and selected mode.
 5. The user reviews the generated material:
@@ -66,7 +66,7 @@ Source: `scope.md > The Core Loop` and `scope.md > The POC Boundary`.
 - The landing page explains the note-to-study experience.
 - The user can choose guest use or login/sign-up.
 - Guest use allows the user to proceed without creating an account.
-- Login/sign-up is presented as an option for future saved information, but real authentication, persistence, and history are deferred from this POC.
+- Login/sign-up uses PostgreSQL-backed accounts and server-side sessions. Study history remains outside this POC.
 
 ### Note and mode setup
 
@@ -143,7 +143,7 @@ Source: `scope.md > The POC Boundary`.
 - Quiz questions are multiple-choice.
 - Flashcards use double-tap to reveal, swipe navigation, and keyboard arrow navigation.
 - The alpaca reacts to loading, waiting, correct, and incorrect states.
-- Guest versus account choice is visible, but real authentication and saved history are deferred.
+- Guest versus account choice is supported; account study history remains deferred.
 - The visual direction uses light pink, light blue, and light purple with simple, cute typography.
 - Empty, unclear, and failed-generation cases get distinct, short, friendly guidance.
 - Completion provides full-session review, retake, and create-new-session actions.
@@ -162,7 +162,7 @@ Source: `scope.md > The POC Boundary`.
 
 ## Deferred From the POC
 
-- Real login and sign-up authentication, because the demo needs to prove the study loop first.
+- Saved study history, password reset, email verification, and social login remain outside this POC.
 - Saved notes, user profiles, and study history, because they require persistence beyond the core experience.
 - Summary and plan-list generation, because they are useful extensions but not needed to prove the quiz/flashcard kernel.
 

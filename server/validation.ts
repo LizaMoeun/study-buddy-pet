@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const authRequestSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters.")
+});
+
 export const generateRequestSchema = z.object({
   note: z.string().trim().min(20, "Please add a little more detail to your notes."),
   mode: z.enum(["quiz", "flashcards", "both"]),

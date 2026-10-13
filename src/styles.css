@@ -27,6 +27,7 @@ h1 span { color: #d47fb2; }
 .button--wide { width: 100%; }
 .button:disabled { cursor: not-allowed; opacity: .5; }
 .guest-note, .form-hint { color: #9b90a4; font-size: .82rem; }
+.guest-pill--button { border: 0; cursor: pointer; }
 .hero-companion { display: grid; justify-items: center; }
 .companion-message { display: inline-block; padding: 15px 22px; border: 1px solid #f4dbea; border-radius: 20px; color: #896a9d; background: #fff0f8; box-shadow: 0 8px 24px rgba(203, 147, 190, .16); font-weight: 800; text-align: center; }
 .companion-message--correct, .companion-message--complete { animation: encouragement-pop .45s ease-out; }
@@ -41,6 +42,13 @@ h1 span { color: #d47fb2; }
 .setup-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(28px, 7vw, 90px); align-items: center; max-width: 1180px; margin: 9vh auto 0; }
 .setup-intro h1 { max-width: 440px; font-size: clamp(2.3rem, 4vw, 4rem); }
 .setup-card { padding: clamp(24px, 4vw, 42px); border: 1px solid #ebdef4; border-radius: 28px; background: rgba(255,255,255,.86); box-shadow: 0 18px 45px rgba(168, 148, 194, .13); }
+.auth-card { width: min(560px, 100%); margin: auto; padding: clamp(26px, 5vw, 52px); border: 1px solid #ebdef4; border-radius: 28px; background: rgba(255,255,255,.88); box-shadow: 0 18px 45px rgba(168, 148, 194, .13); }
+.auth-card h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
+.auth-copy { color: #756b83; line-height: 1.6; }
+.auth-form { display: grid; gap: 10px; margin-top: 28px; }
+.auth-form input { width: 100%; border: 1px solid #e8dced; border-radius: 16px; outline: none; padding: 14px 16px; background: #fff; color: #5b5169; }
+.auth-form input:focus { border-color: #c39ad4; box-shadow: 0 0 0 4px #f7eafb; }
+.auth-switch { margin-top: 18px; border: 0; padding: 0; color: #8d72a7; background: transparent; font-weight: 800; }
 .form-error { margin: 14px 0 0; color: #b65f7e; font-size: .88rem; font-weight: 700; }
 .field-label { display: block; margin-bottom: 10px; color: #665774; font-size: .85rem; font-weight: 800; }
 textarea, select { border: 1px solid #e8dced; border-radius: 16px; outline: none; background: #fff; color: #5b5169; }

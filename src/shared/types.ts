@@ -24,3 +24,8 @@ export type StudySession = {
   quiz: QuizQuestion[];
   flashcards: Flashcard[];
 };
+
+export type AuthUser = {
+  id: string;
+  email: string;
+};
