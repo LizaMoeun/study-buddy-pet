@@ -27,25 +27,11 @@ h1 span { color: #d47fb2; }
 .button--wide { width: 100%; }
 .button:disabled { cursor: not-allowed; opacity: .5; }
 .guest-note, .form-hint { color: #9b90a4; font-size: .82rem; }
-.hero-companion { display: grid; justify-items: center; gap: 24px; }
-.speech-bubble { padding: 13px 20px; border-radius: 20px; color: #896a9d; background: #fff0f8; box-shadow: 0 8px 24px rgba(203, 147, 190, .16); }
-
-.alpaca { position: relative; width: 190px; height: 230px; animation: float 3.5s ease-in-out infinite; }
-.alpaca--waiting { transform: scale(.8); opacity: .9; }
-.alpaca--loading { animation: dance .65s ease-in-out infinite alternate; }
-.alpaca__head { position: absolute; z-index: 2; top: 30px; left: 47px; width: 96px; height: 145px; border: 4px solid #c58d68; border-radius: 46% 46% 38% 38%; background: #f5cda8; }
-.alpaca__ear { position: absolute; z-index: 1; top: 4px; width: 30px; height: 84px; border: 4px solid #c58d68; border-radius: 65% 65% 35% 35%; background: #edb98f; }
-.alpaca__ear--left { left: 43px; transform: rotate(-16deg); }
-.alpaca__ear--right { right: 43px; transform: rotate(16deg); }
-.alpaca__eye { position: absolute; top: 49px; width: 12px; height: 16px; border-radius: 50%; background: #514663; }
-.alpaca__eye--left { left: 23px; }
-.alpaca__eye--right { right: 23px; }
-.alpaca__nose { position: absolute; left: 36px; top: 93px; width: 24px; height: 17px; border-radius: 50%; background: #a86c70; }
-.alpaca__neck { position: absolute; left: 70px; top: 150px; width: 50px; height: 64px; border-radius: 45%; background: #f0be96; }
-.alpaca__body { position: absolute; left: 50px; top: 188px; width: 90px; height: 40px; border-radius: 50% 50% 30% 30%; background: #f0be96; }
-.alpaca__scarf { position: absolute; z-index: 3; left: 51px; top: 150px; width: 88px; height: 24px; border-radius: 12px; background: #a9a7e8; }
-@keyframes float { 50% { transform: translateY(-8px) rotate(1deg); } }
-@keyframes dance { from { transform: rotate(-5deg) translateY(3px); } to { transform: rotate(5deg) translateY(-6px); } }
+.hero-companion { display: grid; justify-items: center; }
+.companion-message { display: inline-block; padding: 15px 22px; border: 1px solid #f4dbea; border-radius: 20px; color: #896a9d; background: #fff0f8; box-shadow: 0 8px 24px rgba(203, 147, 190, .16); font-weight: 800; text-align: center; }
+.companion-message--correct, .companion-message--complete { animation: encouragement-pop .45s ease-out; }
+.companion-message--incorrect { animation: encouragement-pop .35s ease-out; }
+@keyframes encouragement-pop { 0% { transform: scale(.88); opacity: .4; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
 
 .page--setup { background: linear-gradient(145deg, #fffafd, #f5f7ff); }
 .topbar { display: flex; align-items: center; justify-content: space-between; max-width: 1180px; margin: 0 auto; }
@@ -54,7 +40,6 @@ h1 span { color: #d47fb2; }
 .guest-pill { padding: 8px 14px; border-radius: 999px; color: #8a72a2; background: #f1eafa; font-size: .82rem; font-weight: 700; }
 .setup-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(28px, 7vw, 90px); align-items: center; max-width: 1180px; margin: 9vh auto 0; }
 .setup-intro h1 { max-width: 440px; font-size: clamp(2.3rem, 4vw, 4rem); }
-.setup-intro > .alpaca { margin: 12px 0 0 60px; }
 .setup-card { padding: clamp(24px, 4vw, 42px); border: 1px solid #ebdef4; border-radius: 28px; background: rgba(255,255,255,.86); box-shadow: 0 18px 45px rgba(168, 148, 194, .13); }
 .form-error { margin: 14px 0 0; color: #b65f7e; font-size: .88rem; font-weight: 700; }
 .field-label { display: block; margin-bottom: 10px; color: #665774; font-size: .85rem; font-weight: 800; }
@@ -80,16 +65,15 @@ fieldset { min-width: 0; padding: 0; border: 0; }
   .hero-card, .setup-layout, .generated-layout { grid-template-columns: 1fr; }
   .hero-companion { order: -1; }
   .setup-layout { margin-top: 50px; }
-  .setup-intro > .alpaca { margin-left: 0; }
 }
 
 /* Interactive Review Styles */
 .review-view { display: flex; flex-direction: column; height: 100vh; }
 .review-topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; border-bottom: 1px solid #eadcf1; background: rgba(255, 255, 255, 0.95); }
 .review-topbar > div { font-weight: 700; color: #75518c; }
-.alpaca-inline { width: 200px; text-align: center; }
-.alpaca-inline .alpaca { width: 120px; height: 150px; margin: 0 auto; }
-.alpaca-message { text-align: center; margin-top: 8px; font-size: 0.9rem; color: #9b90a4; }
+
+.alpaca-inline { display: grid; place-items: center; width: 200px; }
+.alpaca-inline .companion-message { max-width: 200px; padding: 11px 14px; font-size: .86rem; }
 
 /* Quiz Review */
 .quiz-card { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 28px; max-width: 800px; margin: 0 auto; width: 100%; }

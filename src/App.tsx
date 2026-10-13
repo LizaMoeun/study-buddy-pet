@@ -29,7 +29,6 @@ function Landing({ onContinue }: { onContinue: () => void }) {
         </div>
         <div className="hero-companion">
           <AlpacaCompanion />
-          <div className="speech-bubble">You can do this! ✨</div>
         </div>
       </section>
     </main>

@@ -13,20 +13,8 @@ export default function AlpacaCompanion({ state = "welcome" }: AlpacaCompanionPr
   };
 
   return (
-    <div>
-      <div className={`alpaca alpaca--${state}`} aria-label={`Alpaca ${state}`}>
-        <div className="alpaca__ear alpaca__ear--left" />
-        <div className="alpaca__ear alpaca__ear--right" />
-        <div className="alpaca__head">
-          <span className="alpaca__eye alpaca__eye--left" />
-          <span className="alpaca__eye alpaca__eye--right" />
-          <span className="alpaca__nose" />
-        </div>
-        <div className="alpaca__neck" />
-        <div className="alpaca__body" />
-        <div className="alpaca__scarf" />
-      </div>
-      <div className="alpaca-message">{messages[state]}</div>
+    <div className={`companion-message companion-message--${state}`} role="status">
+      {messages[state]}
     </div>
   );
 }
