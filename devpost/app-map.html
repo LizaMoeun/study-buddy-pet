@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpaca Study Buddy app map</title>
+  <style>
+    :root { color-scheme: light; --ink: #332b45; --muted: #6f6680; --card: #fffaf5; --accent: #8d6ac8; --line: #dbcdf0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 2rem; color: var(--ink); background: #f6f0ff; font: 16px/1.6 system-ui, sans-serif; }
+    main { max-width: 900px; margin: auto; }
+    h1, h2 { line-height: 1.2; }
+    .intro, .route, .pointers, .practice { padding: 1.25rem; margin: 1rem 0; border: 1px solid var(--line); border-radius: 1rem; background: var(--card); }
+    .diagram { display: grid; gap: .75rem; grid-template-columns: repeat(3, 1fr); align-items: center; margin: 1.25rem 0; }
+    .node { padding: 1rem; text-align: center; border: 2px solid var(--accent); border-radius: .8rem; background: #fff; }
+    .arrow { text-align: center; color: var(--accent); font-size: 1.5rem; }
+    code { padding: .1rem .3rem; border-radius: .25rem; background: #eee5fb; }
+    li { margin: .55rem 0; }
+    @media (max-width: 650px) { body { padding: 1rem; } .diagram { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Alpaca Study Buddy</h1>
+    <section class="intro">
+      <p>This proof of concept turns a student's pasted notes into a small quiz, flashcard set, or both. The browser holds the active session in memory, while the server calls Groq through the OpenAI-compatible SDK and validates the response with Zod before it reaches the UI.</p>
+      <p><strong>Run it:</strong> copy <code>.env.example</code> to <code>.env</code>, add a Groq key (and optional database URL), then run <code>npm install</code> and <code>npm run dev</code>. This map is an offline snapshot from commit <code>83d2a8f</code>.</p>
+    </section>
+
+    <h2>One real action through the app</h2>
+    <div class="diagram" aria-label="Note entry to validated study set flow">
+      <div class="node">Paste notes<br><code>src/App.tsx</code><br><code>Setup.generate</code></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node">Generate and validate<br><code>server/index.ts</code><br><code>server/openai.ts</code></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node">Review and completion<br><code>src/App.tsx</code><br><code>QuizReview</code> / <code>FlashcardReview</code></div>
+    </div>
+
+    <section class="route">
+      <h2>Reference route</h2>
+      <ol>
+        <li>Start at <code>Setup.generate</code> in <code>src/App.tsx</code>. It sends the note, selected mode, and count to <code>POST /api/generate</code>.</li>
+        <li>Follow the route in <code>server/index.ts</code> to <code>generateStudySession</code> in <code>server/openai.ts</code>. The prompt requests JSON, then Zod checks the decoded object and item counts.</li>
+        <li>Return to <code>ReviewView</code> in <code>src/App.tsx</code>. It selects <code>QuizReview</code> or <code>FlashcardReview</code>, then sends the user to <code>CompletionView</code> and <code>FullSessionReview</code>.</li>
+      </ol>
+    </section>
+
+    <section class="pointers">
+      <h2>To change this, start here</h2>
+      <ul>
+        <li>Change the setup wording or default item count: <code>Setup</code> in <code>src/App.tsx</code>.</li>
+        <li>Change generated fields or safety rules: <code>generateRequestSchema</code> and <code>studySessionSchema</code> in <code>server/validation.ts</code>, then the prompt in <code>server/openai.ts</code>.</li>
+        <li>Change completion actions: <code>CompletionView</code> and the <code>ReviewView</code> state transitions in <code>src/App.tsx</code>.</li>
+        <li>Change the friendly visual language: <code>src/styles.css</code> and <code>AlpacaCompanion</code>.</li>
+      </ul>
+    </section>
+
+    <section class="practice">
+      <h2>A practice to reuse</h2>
+      <p>When Groq returned malformed JSON, the build used the observed provider response to narrow the fix: describe the required fields plainly, parse the response, and keep Zod as the final boundary. On another project, connect a user-visible acceptance criterion to a real response check before trusting external data.</p>
+    </section>
+  </main>
+</body>
+</html>

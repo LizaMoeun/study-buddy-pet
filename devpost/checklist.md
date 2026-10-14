@@ -52,23 +52,23 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [ ] Early usable behavior explored — after slice 1, before AI and review details are finalized
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — learner ran the guest journey through completion, full review, retake, new session, and invalid-note guidance; reported that everything worked and felt ready.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship.
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — focused investigation of the typed AI request through validation and rendering
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — brief evidence-based recap of the typed AI request through Groq JSON mode, Zod validation, and review rendering.
+- [x] Optional edit and transfer reflection addressed — optional live code route was offered; learner chose the brief recap.
+- [x] `devpost/app-map.html` generated from finished code and checked for public-safe offline content, including a project-grounded practice to reuse.
 
-Activity and evidence: [to be completed after the build]
-Route and stops: [to be completed after the build]
-Edit outcome: [to be completed after the build]
-Reflection: [to be completed after the build]
-Activity mode: [to be completed after the build]
+Activity and evidence: The build traced the real generation path from `Setup.generate` in `src/App.tsx`, through `POST /api/generate` in `server/index.ts`, to Groq JSON decoding and Zod validation in `server/openai.ts`; the resulting session renders through the quiz/flashcard review components.
+Route and stops: Reference route recorded in `devpost/app-map.html`; no live tour was requested.
+Edit outcome: Not applicable; learner chose the brief recap instead of the optional safe edit.
+Reflection: Optional transfer reflection offered; learner chose the brief recap.
+Activity mode: Evidence-based recap.
 
 ## Revisions
 
