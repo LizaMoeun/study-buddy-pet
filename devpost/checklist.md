@@ -20,11 +20,11 @@ Build mode: fast
   Commit: `Create Alpaca Study Buddy setup flow`
 
 - [x] **2. Notes become validated AI study material**
-  Becomes usable: The selected note, mode, and quantity travel through the local server to OpenAI, and the app renders validated quiz and/or flashcard data instead of generic chatbot text.
+  Becomes usable: The selected note, mode, and quantity travel through the local server to Groq, and the app renders validated quiz and/or flashcard data instead of generic chatbot text.
   Why now: This is the core technical risk and the unique product kernel; proving structured generation early prevents building polished review UI around an unreliable response shape.
   PRD ref: `prd.md > Note and mode setup`, `prd.md > AI generation`, `prd.md > Friendly guidance for unusable input or failures`
   Spec ref: `spec.md > The Core Journey Through the System`, `spec.md > Generation API`, `spec.md > Data Model`, `spec.md > External Services and Dependencies`, `spec.md > Important Failure Modes`
-  Build: Add the Express `POST /api/generate` endpoint, OpenAI structured request, Zod request/response schemas, mode-aware prompt, environment template, Vite API proxy, loading state, and generated output rendering for quiz, flashcards, and shared-count both mode. Keep the API key server-side.
+  Build: Add the Express `POST /api/generate` endpoint, Groq JSON-mode request through the OpenAI-compatible SDK, Zod request/response schemas, mode-aware prompt, environment template, Vite API proxy, loading state, and generated output rendering for quiz, flashcards, and shared-count both mode. Keep the API key server-side.
   Verify (mechanical): Run type-check/build; with a configured key, call the endpoint for quiz-only, flashcard-only, and both mode and verify the returned shape and selected output types; send invalid count or empty note and verify a clear error response.
   Learner check: Start the app with your local key, paste a real note, try each mode, and check that the generated questions/cards use the note and respect your selected quantity.
   Commit: `Generate validated AI study material`
@@ -39,13 +39,13 @@ Build mode: fast
   Learner check: Try one correct and one incorrect quiz answer, then review cards with double-tap, swipes, and arrow keys. Report whether the alpaca feels encouraging rather than like a classroom grader.
   Commit: `Add interactive study review`
 
-- [ ] **4. Completion, retry, and new-session paths finish the POC**
+- [x] **4. Completion, retry, and new-session paths finish the POC**
   Becomes usable: The user gets friendly guidance for empty/unclear notes and generation failures, reaches completion, reviews or retakes the same session, or starts a new one.
   Why now: These boundary states complete the promised journey without adding deferred authentication, history, summaries, or plans.
   PRD ref: `prd.md > Quiz review and encouragement`, `prd.md > Friendly guidance for unusable input or failures`, `prd.md > States and Boundaries`, `prd.md > Completion`
   Spec ref: `spec.md > Completion and session actions`, `spec.md > Important Failure Modes`, `spec.md > What Was Simplified and Why`
-  Build: Add completion view and full-session review, retake reset, new-session reset, friendly empty/unclear/error messages, retry behavior, and final visual polish.
-  Verify (mechanical): Run type-check/build; test empty input, short/unclear input handling, simulated API failure, final-item completion, review, retake, new session, and refresh-clears-memory behavior.
+  Build: Add completion view and full-session review, retake reset, new-session reset, friendly empty/unclear/error messages, retry behavior, robust Groq JSON parsing, and final visual polish.
+  Verify (mechanical): Run type-check/build; test empty input, short/unclear input handling, simulated API failure, final-item completion, review, retake, new session, and refresh-clears-memory behavior. Browser verification covered Groq generation, completion, full review, retake, refresh reset, empty input, and short-note validation; the provider failure path was also observed during the malformed JSON-mode response and returned a friendly retry message.
   Learner check: Run one short session to the end, try review, retake, and new session, then try an empty note and a failed generation. Note anything confusing, discouraging, or unlike the approved PRD.
   Commit: `Finish study session flows`
 
@@ -73,3 +73,4 @@ Activity mode: [to be completed after the build]
 ## Revisions
 
 - The first CSS placeholder was too dog-like in the early hands-on check, so its proportions were revised to use a longer alpaca face, taller ears, longer neck, and visible body while keeping the replaceable CSS-only approach.
+- Groq JSON mode rejected the original prompt because it embedded a JSON Schema that the model copied before its answer. The prompt now describes the required object fields in plain language, and the server safely unwraps one encoded JSON layer before applying the existing Zod validation.

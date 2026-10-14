@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { AuthUser, GenerateRequest, StudyMode, StudySession } from "./shared/types";
 import AlpacaCompanion from "./components/AlpacaCompanion";
+import CompletionView from "./components/CompletionView";
+import FullSessionReview from "./components/FullSessionReview";
 import AuthForm from "./components/AuthForm";
 import QuizReview from "./components/QuizReview";
 import FlashcardReview from "./components/FlashcardReview";
@@ -173,13 +175,15 @@ function GeneratedPreview({ session, onStartReview, onBack }: { session: StudySe
 
 function ReviewView({ session, onBack }: { session: StudySession; onBack: () => void }) {
   const [isReviewing, setIsReviewing] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [showFullReview, setShowFullReview] = useState(false);
   const [reviewPhase, setReviewPhase] = useState<"quiz" | "flashcards">(
     session.quiz.length > 0 ? "quiz" : "flashcards"
   );
 
   function handleComplete() {
-    // TODO: Move to completion view (slice 4)
     setIsReviewing(false);
+    setIsComplete(true);
   }
 
   function handleQuizComplete() {
@@ -189,6 +193,25 @@ function ReviewView({ session, onBack }: { session: StudySession; onBack: () => 
     } else {
       handleComplete();
     }
+  }
+
+  if (showFullReview) {
+    return <FullSessionReview session={session} onBack={() => setShowFullReview(false)} />;
+  }
+
+  if (isComplete) {
+    return (
+      <CompletionView
+        session={session}
+        onReview={() => setShowFullReview(true)}
+        onRetake={() => {
+          setReviewPhase(session.quiz.length > 0 ? "quiz" : "flashcards");
+          setIsComplete(false);
+          setIsReviewing(true);
+        }}
+        onNewSession={onBack}
+      />
+    );
   }
 
   if (!isReviewing) {
